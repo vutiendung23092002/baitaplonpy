@@ -23,4 +23,6 @@ Chữ cái đầu của biến/hàm viết in thường
 
 - main.py: lớp main
 
-- product.txt: Lưu danh sách sản phẩm
+- list_product.txt: Lưu danh sách sản phẩm
+
+** Anh em không vào file list_product.txt sửa linh tinh nhé
