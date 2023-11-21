@@ -35,18 +35,18 @@ def add_product(manager):
     while True:
         try:
             product_code = input("Nhập mã hàng hoá: ")
+            #Kiểm tra xem id có trùng không
+            if manager.check_by_code(product_code) == True:
+                raise ValueError("Mã hàng hoá đã tồn tại")
             product_name = input("Nhập tên hàng hoá: ")
             selling_price = float(input("Nhập giá bán: "))
             cost_price = float(input("Nhập giá nhập: "))
             quantity = int(input("Nhập số lượng: "))
-            manufacture_date = input("Nhập ngày sản xuất (dd/mm/yyyy): ")
-            expiration_date = input("Nhập hạn sử dụng (dd/mm/yyyy): ")
-            #Kiểm tra xem id có trùng không
-            if manager.search_by_code(product_code) is True:
-                raise ValueError(f"Sản phẩm {product_code} đã tồn tại")
             # Kiểm tra số lượng, giá nhập, giá bán > 0
             if quantity <= 0 or selling_price <= 0 or cost_price <= 0:
                 raise ValueError("Số lượng và giá tiền phải lớn hơn 0.")
+            manufacture_date = input("Nhập ngày sản xuất (dd/mm/yyyy): ")
+            expiration_date = input("Nhập hạn sử dụng (dd/mm/yyyy): ")
             # Kiểm tra định dạng ngày tháng
             datetime.datetime.strptime(manufacture_date, '%d/%m/%Y')
             datetime.datetime.strptime(expiration_date, '%d/%m/%Y')

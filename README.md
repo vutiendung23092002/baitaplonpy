@@ -8,7 +8,19 @@ Tránh sử dụng tên biến global giống với tên biến local trong mộ
 Chữ cái đầu của biến/hàm viết in thường
 
 - invoice.py: class hoá đơn
+
 - product.py: claas sản phẩm
+
 - productofinvoice.py: sản phẩm thuộc hoá đơn
+
 - manageProduct.py: lớp quản lý hàng hoá
+	+ load_products_from_file() hàm đọc dữ liệu sản phẩm từ file
+	+ display_products() hàm hiển thị danh sách sản phẩm theo định dạng
+	+ check_by_code() hàm kiểm tra xem mã sản phẩm nhập vào có tồn tại trong product.txt chưa
+	+ add_product() hàm thêm sản phẩm vào
+	+ search_by_name() hàm tìm sản phẩm theo tên sản phẩm
+	+ display_all_products() hàm hiển thị tất cả sản phẩm
+
 - main.py: lớp main
+
+- product.txt: Lưu danh sách sản phẩm
