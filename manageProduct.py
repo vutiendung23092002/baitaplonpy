@@ -15,6 +15,10 @@ class ManageProduct:
         except FileNotFoundError:
             print("File list_product.txt không tồn tại.")
 
+    def get_products(self):
+        self.load_products_from_file()
+        return self.product_show
+
     def display_products(self, products):
         row1 = '+ {:-<5} + {:-<15} + {:-<10} + {:-<10} + {:-<10} + {:-<10} + {:-<10}  +'.format('', '', '', '', '', '', '')
         row2 = '+ {:<5} + {:<15} + {:<10} + {:<10} + {:<10} + {:<10} + {:<10}  +'.format('MHH', 'Tên hàng hoá', 'Số lượng', 'Giá bán', 'Giá nhập', 'NSX', 'HSD')

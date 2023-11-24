@@ -1,4 +1,6 @@
 from manageProduct import ManageProduct
+from invoice import Invoice
+from productofinvoice import ProductOfInvoice
 import datetime
 
 def display_menu():
@@ -6,6 +8,7 @@ def display_menu():
     print("1. Thêm hàng hoá")
     print("2. Tìm kiếm hàng hoá")
     print("3. Hiển thị danh sách hàng hoá")
+    print("4. Thêm hoá đơn")
     print("0. Thoát")
 
     choice = int(input("Nhập lựa chọn của bạn: "))
@@ -22,6 +25,11 @@ def display_menu():
     elif choice == 3:
         print("____________________________________________________________________________________________________")
         display_products(manager)
+        print("____________________________________________________________________________________________________")
+        display_menu()
+    elif choice == 4:
+        print("____________________________________________________________________________________________________")
+        add_invoice(manager)
         print("____________________________________________________________________________________________________")
         display_menu()
     elif choice == 0:
@@ -64,6 +72,85 @@ def display_products(manager):
 def search_by_name(manager):
     keyword = str(input("Nhập tên sản phẩm cần tìm kiếm: "))
     manager.search_by_name(keyword)
+
+def add_invoice(manager):
+    products = manager.get_products()
+    invoice_code = input("Nhập mã hoá đơn: ")
+    invoice_date = input("Nhập ngày hoá đơn (dd/mm/yyyy): ")
+    new_invoice = Invoice(invoice_code, invoice_date)
+
+    invoice_products_info = []  # Danh sách thông tin sản phẩm trong hoá đơn
+
+    while True:
+        print("Thêm sản phẩm vào hoá đơn:")
+        product_code = input("Nhập mã sản phẩm: ")
+
+        # Kiểm tra xem sản phẩm có tồn tại và đủ số lượng không
+        selected_product = None
+        for product in products:
+            if product.get_product_code() == product_code:
+                selected_product = product
+                break
+
+        if selected_product is None:
+            print("Sản phẩm không tồn tại.")
+        else:
+            quantity_to_add = int(input("Nhập số lượng sản phẩm: "))
+            if quantity_to_add > selected_product.get_quantity():
+                print("Sản phẩm không đủ số lượng.")
+            else:
+                selected_product.set_quantity(selected_product.get_quantity() - quantity_to_add)  # Giảm số lượng trong kho
+                product_for_invoice = ProductOfInvoice(
+                    selected_product.get_product_code(),
+                    selected_product.get_product_name(),
+                    selected_product.get_selling_price(),
+                    selected_product.get_cost_price(),
+                    quantity_to_add,
+                    selected_product.get_manufacture_date(),
+                    selected_product.get_expiration_date(),
+                    quantity_to_add
+                )
+                new_invoice.add_product_to_invoice(
+                    product_for_invoice.get_product_code(),
+                    product_for_invoice.get_product_name(),
+                    product_for_invoice.get_selling_price(),
+                    product_for_invoice.get_cost_price(),
+                    product_for_invoice.get_quantity(),
+                    product_for_invoice.get_manufacture_date(),
+                    product_for_invoice.get_expiration_date(),
+                    product_for_invoice.get_sold_quantity()
+                )
+                invoice_products_info.append(f"{selected_product.get_product_code()},{selected_product.get_product_name()},{quantity_to_add}")
+
+                # Cập nhật lại số lượng sản phẩm trong file list_product.txt
+                updated_product_info = []
+                with open('list_product.txt', 'r', encoding='utf-8') as file:
+                    for line in file:
+                        info = line.strip().split(',')
+                        if info[0] == selected_product.get_product_code():
+                            info[4] = str(int(info[4]) - quantity_to_add)  # Giảm số lượng sản phẩm
+                        updated_product_info.append(','.join(info))
+
+                with open('list_product.txt', 'w', encoding='utf-8') as file:
+                    for line in updated_product_info:
+                        file.write(f"{line}\n")
+
+                print("Sản phẩm đã được thêm vào hoá đơn.")
+
+        choice = input("Bạn có muốn thêm sản phẩm khác không? (Y/N): ")
+        if choice.lower() != 'y':
+            break  # Nếu người dùng chọn 'N', thoát khỏi vòng lặp
+
+    # Thêm hoá đơn vào file
+    with open('list_invoice.txt', 'a', encoding='utf-8') as file:
+        file.write(f"{new_invoice.get_invoice_code()},{new_invoice.get_invoice_date()},{new_invoice.calculate_total_invoice_amount()}\n")
+
+    # Thêm thông tin sản phẩm trong hoá đơn vào file
+    with open('list_invoice_products.txt', 'a', encoding='utf-8') as file:
+        for product_info in invoice_products_info:
+            file.write(f"{invoice_code},{product_info}\n")
+
+    print("Hoá đơn đã được thêm thành công!")
 
 manager = ManageProduct()
 display_menu()
