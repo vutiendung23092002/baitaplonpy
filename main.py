@@ -73,12 +73,65 @@ def search_by_name(manager):
     keyword = str(input("Nhập tên sản phẩm cần tìm kiếm: "))
     manager.search_by_name(keyword)
 
+#kiểm tra để mã hóa đơn không bị trùng
+def is_invoice_code_exist(invoice_code):
+    with open('list_invoice.txt', 'r', encoding='utf-8') as file:
+        for line in file:
+            info = line.strip().split(',')
+            if info[0] == invoice_code:
+                return True
+    return False
+
+# Kiểm tra đúng định dạng ngày của hóa đơn
+def is_leap_year(year):
+    return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+def validate_date(date_text):
+    while True:
+        date_components = date_text.split('/')
+        if len(date_components) == 3:
+            day, month, year = date_components
+            try:
+                day = int(day)
+                month = int(month)
+                year = int(year)
+
+                if month in [1, 3, 5, 7, 8, 10, 12]:
+                    days_in_month = 31
+                elif month in [4, 6, 9, 11]:
+                    days_in_month = 30
+                elif month == 2:
+                    if is_leap_year(year):
+                        days_in_month = 29
+                    else:
+                        days_in_month = 28
+                else:
+                    print("Tháng không hợp lệ. Nhập lại (dd/mm/yyyy): ")
+                    date_text = input("Nhập ngày hoá đơn (dd/mm/yyyy): ")
+                    continue
+
+                if 1 <= day <= days_in_month:
+                    return f"{day:02d}/{month:02d}/{year:04d}"
+                else:
+                    print("Ngày không hợp lệ. Nhập lại (dd/mm/yyyy): ")
+            except ValueError:
+                pass
+        print("Định dạng ngày không đúng. Nhập lại (dd/mm/yyyy): ")
+        date_text = input("Nhập ngày hoá đơn (dd/mm/yyyy): ")
+
 def add_invoice(manager):
     products = manager.get_products()
-    invoice_code = input("Nhập mã hoá đơn: ")
-    invoice_date = input("Nhập ngày hoá đơn (dd/mm/yyyy): ")
-    new_invoice = Invoice(invoice_code, invoice_date)
+    while True:
+        invoice_code = input("Nhập mã hoá đơn: ")
 
+        if is_invoice_code_exist(invoice_code):
+            print("Mã hoá đơn đã tồn tại. Vui lòng nhập mã khác.")
+        else:
+            break
+
+    invoice_date = input("Nhập ngày hoá đơn (dd/mm/yyyy): ")
+    validated_date = validate_date(invoice_date)
+    new_invoice = Invoice(invoice_code, validated_date)
     invoice_products_info = []  # Danh sách thông tin sản phẩm trong hoá đơn
 
     while True:
@@ -151,6 +204,33 @@ def add_invoice(manager):
             file.write(f"{invoice_code},{product_info}\n")
 
     print("Hoá đơn đã được thêm thành công!")
+
+#Kiểm tra đjnh dạng ngày của tính tổng doanh thu theo ngày
+def validate_date_input(date_input):
+    while True:
+        try:
+            formatted_date_input = datetime.datetime.strptime(date_input, '%d/%m/%Y').strftime('%d/%m/%Y')
+            return formatted_date_input
+        except ValueError:
+            print("Định dạng ngày không hợp lệ. Vui lòng nhập lại.")
+            date_input = input("Nhập ngày cần tính tổng doanh thu (dd/mm/yyyy): ")
+
+#Tính tổng doanh thu theo ngày
+def calculate_daily_revenue():
+    date_input = input("Nhập ngày cần tính tổng doanh thu (dd/mm/yyyy): ")
+    formatted_date_input = validate_date_input(date_input)
+
+    total_revenue = 0
+
+    with open('list_invoice.txt', 'r', encoding='utf-8') as invoice_file:
+        for line in invoice_file:
+            invoice_data = line.strip().split(',')
+            invoice_date = invoice_data[1]
+
+            if invoice_date == formatted_date_input:
+                total_revenue += float(invoice_data[2])
+
+    print(f"Tổng doanh thu cho ngày {formatted_date_input}: {total_revenue}")
 
 manager = ManageProduct()
 display_menu()

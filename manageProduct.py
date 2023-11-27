@@ -5,7 +5,7 @@ class ManageProduct:
         self.product_add = []
         self.product_show = []
 
-    def load_products_from_file(self):
+    def load_products_from_file_product(self):
         try:
             with open('list_product.txt', 'r', encoding='utf-8') as file:
                 for line in file:
@@ -16,7 +16,7 @@ class ManageProduct:
             print("File list_product.txt không tồn tại.")
 
     def get_products(self):
-        self.load_products_from_file()
+        self.load_products_from_file_product()
         return self.product_show
 
     def display_products(self, products):
@@ -33,7 +33,7 @@ class ManageProduct:
 
     def check_by_code(self, search_code):
         self.product_show = []
-        self.load_products_from_file()
+        self.load_products_from_file_product()
         for product in self.product_show: 
             if product.get_product_code() == search_code:
                 return True
@@ -46,7 +46,7 @@ class ManageProduct:
     def search_by_name(self, search_name):
         self.product_show = []
         found_products = []
-        self.load_products_from_file()
+        self.load_products_from_file_product()
         for product in self.product_show:
             if search_name.lower() in product.get_product_name().lower():
                 found_products.append(product)
@@ -58,7 +58,7 @@ class ManageProduct:
 
     def display_all_products(self):
         self.product_show = []
-        self.load_products_from_file()
+        self.load_products_from_file_product()
         if len(self.product_show) == 0:
             print("Không có hàng hoá nào trong danh sách.")
         else:

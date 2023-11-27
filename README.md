@@ -14,12 +14,14 @@ Chữ cái đầu của biến/hàm viết in thường
 - productofinvoice.py: sản phẩm thuộc hoá đơn
 
 - manageProduct.py: lớp quản lý hàng hoá
+------------------------------------------------Dũng------------------------------------------------------------
 	+ load_products_from_file() hàm đọc dữ liệu sản phẩm từ file
 	+ display_products() hàm hiển thị danh sách sản phẩm theo định dạng
 	+ check_by_code() hàm kiểm tra xem mã sản phẩm nhập vào có tồn tại trong product.txt chưa
 	+ add_product() hàm thêm sản phẩm vào
 	+ search_by_name() hàm tìm sản phẩm theo tên sản phẩm
 	+ display_all_products() hàm hiển thị tất cả sản phẩm
+----------------------------------------------------------------------------------------------------------------
 
 - main.py: lớp main
 
@@ -30,7 +32,6 @@ Chữ cái đầu của biến/hàm viết in thường
 Phân chia công việc:
 - Dũng: 
 	+ Thêm hàng hoá (Các hàng hoá được thêm mới sẽ được thêm vào list_product.txt)
-	+ Tìm kiếm hàng hoá
 	+ Hiển thị danh sách hàng hoá
 - Bách:
 	+ Thêm hoá đơn (Các hoá đơn được thêm mới sẽ được thêm vào list_invoice.txt)
@@ -43,7 +44,7 @@ Phân chia công việc:
 	+ Tính tổng doanh thu theo ngày của từng mặt hàng
 - Hoàng:
 	+ Sửa thông tin hàng hoá (Sau khi sửa cập nhật vào list_product.txt)
-	+ Mới ra viện cho làm thế thôi nhé :)))
+	+ Tìm kiếm hàng hoá
 - Hưng: 
 	+ Xoá hàng hoá (Sau khi xoá cập nhật lại list_product.txt)
 	+ Viết báo cáo
