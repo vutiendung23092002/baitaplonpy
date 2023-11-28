@@ -14,6 +14,7 @@ def display_menu():
     print("7. Hiển thị danh sách các sản phẩm sắp hết hạn sử dụng(còn 6 ngày)")
     print("8. Cập nhật giá mới cho các sản phẩm sắp hết hạn sử dụng")
     print("9. Sửa thông tin sản phẩm")
+    print("10. Xoá sản phẩm")
     print("0. Thoát")
 
     choice = int(input("Nhập lựa chọn của bạn: "))
