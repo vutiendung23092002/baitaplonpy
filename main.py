@@ -9,6 +9,11 @@ def display_menu():
     print("2. Tìm kiếm hàng hoá")
     print("3. Hiển thị danh sách hàng hoá")
     print("4. Thêm hoá đơn")
+    print("5. Sắp sếp sản phẩm theo doanh thu")
+    print("6. Tốp 5 sản phẩm có doanh thu cao nhất")
+    print("7. Hiển thị danh sách các sản phẩm sắp hết hạn sử dụng(còn 6 ngày)")
+    print("8. Cập nhật giá mới cho các sản phẩm sắp hết hạn sử dụng")
+    print("9. Sửa thông tin sản phẩm")
     print("0. Thoát")
 
     choice = int(input("Nhập lựa chọn của bạn: "))
@@ -32,6 +37,36 @@ def display_menu():
         add_invoice(manager)
         print("____________________________________________________________________________________________________")
         display_menu()
+    elif choice == 5:
+        print("____________________________________________________________________________________________________")
+        display_sorted_products_revenue(manager)
+        print("____________________________________________________________________________________________________")
+        display_menu()
+    elif choice == 6:
+        print("____________________________________________________________________________________________________")
+        display_top_5_products_revenue(manager)
+        print("____________________________________________________________________________________________________")
+        display_menu()
+    elif choice == 7:
+        print("____________________________________________________________________________________________________")
+        manager.display_near_expired_products()
+        print("____________________________________________________________________________________________________")
+        display_menu()
+    elif choice == 8:
+        print("____________________________________________________________________________________________________")
+        manager.update_price_for_near_expired_products()
+        print("____________________________________________________________________________________________________")
+        display_menu()
+    elif choice == 9:
+        print("____________________________________________________________________________________________________")
+        update_product(manager)
+        print("____________________________________________________________________________________________________")
+        display_menu()
+    elif choice == 10:
+        print("____________________________________________________________________________________________________")
+        delete_product(manager)
+        print("____________________________________________________________________________________________________")
+        display_menu()
     elif choice == 0:
         print("Đã thoát.")
         exit()
@@ -47,8 +82,8 @@ def add_product(manager):
             if manager.check_by_code(product_code) == True:
                 raise ValueError("Mã hàng hoá đã tồn tại")
             product_name = input("Nhập tên hàng hoá: ")
-            selling_price = float(input("Nhập giá bán: "))
-            cost_price = float(input("Nhập giá nhập: "))
+            selling_price = int(input("Nhập giá bán: "))
+            cost_price = int(input("Nhập giá nhập: "))
             quantity = int(input("Nhập số lượng: "))
             # Kiểm tra số lượng, giá nhập, giá bán > 0
             if quantity <= 0 or selling_price <= 0 or cost_price <= 0:
@@ -58,7 +93,7 @@ def add_product(manager):
             # Kiểm tra định dạng ngày tháng
             datetime.datetime.strptime(manufacture_date, '%d/%m/%Y')
             datetime.datetime.strptime(expiration_date, '%d/%m/%Y')
-            manager.add_product(product_code, product_name, selling_price, cost_price, quantity, manufacture_date, expiration_date)
+            manager.set_product(product_code, product_name, selling_price, cost_price, quantity, manufacture_date, expiration_date)
             with open('list_product.txt', 'a', encoding='utf-8') as file:
                 file.write(f"{product_code},{product_name},{selling_price},{cost_price},{quantity},{manufacture_date},{expiration_date}\n")
             print("Hàng hoá đã được thêm thành công!")
@@ -202,7 +237,6 @@ def add_invoice(manager):
     with open('list_invoice_products.txt', 'a', encoding='utf-8') as file:
         for product_info in invoice_products_info:
             file.write(f"{invoice_code},{product_info}\n")
-
     print("Hoá đơn đã được thêm thành công!")
 
 #Kiểm tra đjnh dạng ngày của tính tổng doanh thu theo ngày
@@ -231,6 +265,57 @@ def calculate_daily_revenue():
                 total_revenue += float(invoice_data[2])
 
     print(f"Tổng doanh thu cho ngày {formatted_date_input}: {total_revenue}")
+
+def display_sorted_products_revenue(manager):
+    order = input("Nhập lựa chọn sắp xếp (asc/desc): ")
+    sorted_products = manager.calculate_product_revenue(order)
+    print("Danh sách sản phẩm được sắp xếp theo tổng doanh thu:")
+    # Đọc dữ liệu từ file list_product.txt để có thông tin về tên sản phẩm
+    products_info = {}
+    with open('list_product.txt', 'r', encoding='utf-8') as product_file:
+        for line in product_file:
+            product_info = line.strip().split(',')
+            products_info[product_info[0]] = product_info[1]  # Lưu tên sản phẩm theo mã sản phẩm
+
+    for product_code, revenue in sorted_products:
+        product_name = products_info.get(product_code, 'Tên không tồn tại')  # Lấy tên sản phẩm từ mã sản phẩm
+        print(f"Mã sản phẩm: {product_code}, Tên sản phẩm: {product_name}, Tổng doanh thu: {revenue}")
+
+def display_top_5_products_revenue(manager):
+    sorted_products = manager.calculate_product_revenue('desc')
+    print("5 sản phẩm có doanh thu cao nhất:")
+    # Đọc dữ liệu từ file list_product.txt để có thông tin về tên sản phẩm
+    products_info = {}
+    with open('list_product.txt', 'r', encoding='utf-8') as product_file:
+        for line in product_file:
+            product_info = line.strip().split(',')
+            products_info[product_info[0]] = product_info[1]  # Lưu tên sản phẩm theo mã sản phẩm
+    top_5_products = sorted_products[:5]  # Chọn 5 sản phẩm có doanh thu cao nhất
+    for product_code, revenue in top_5_products:
+        product_name = products_info.get(product_code, 'Tên không tồn tại')  # Lấy tên sản phẩm từ mã sản phẩm
+        print(f"Mã sản phẩm: {product_code}, Tên sản phẩm: {product_name}, Tổng doanh thu: {revenue}")
+
+#Cập nhật sản phẩm
+def update_product(manager):
+    try:
+        product_code = input("Nhập mã hàng hoá cần sửa: ")
+
+        if not manager.check_by_code(product_code):
+            raise ValueError("Mã hàng hoá không tồn tại.")
+
+        manager.update_product_info(product_code)
+    except ValueError as e:
+        print(f"Lỗi: {e}")
+
+#Xoá sản phẩm với mã id nhập từ bàn phím
+def delete_product(manager):
+    try:
+        product_code = input("Nhập mã hàng hoá cần sửa: ")
+        if not manager.check_by_code(product_code):
+            raise ValueError("Mã hàng hoá không tồn tại.")
+        manager.delete_product_by_code(product_code)
+    except ValueError as e:
+        print(f"Lỗi: {e}")
 
 manager = ManageProduct()
 display_menu()
