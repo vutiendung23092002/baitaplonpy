@@ -15,6 +15,7 @@ def display_menu():
     print("8. Cập nhật giá mới cho các sản phẩm sắp hết hạn sử dụng")
     print("9. Sửa thông tin sản phẩm")
     print("10. Xoá sản phẩm")
+    print("11. Tính tổng doanh thu theo ngày")
     print("0. Thoát")
 
     choice = int(input("Nhập lựa chọn của bạn: "))
@@ -66,6 +67,11 @@ def display_menu():
     elif choice == 10:
         print("____________________________________________________________________________________________________")
         delete_product(manager)
+        print("____________________________________________________________________________________________________")
+        display_menu()
+    elif choice == 11:
+        print("____________________________________________________________________________________________________")
+        calculate_daily_revenue()
         print("____________________________________________________________________________________________________")
         display_menu()
     elif choice == 0:
@@ -254,9 +260,7 @@ def validate_date_input(date_input):
 def calculate_daily_revenue():
     date_input = input("Nhập ngày cần tính tổng doanh thu (dd/mm/yyyy): ")
     formatted_date_input = validate_date_input(date_input)
-
     total_revenue = 0
-
     with open('list_invoice.txt', 'r', encoding='utf-8') as invoice_file:
         for line in invoice_file:
             invoice_data = line.strip().split(',')
@@ -264,7 +268,6 @@ def calculate_daily_revenue():
 
             if invoice_date == formatted_date_input:
                 total_revenue += float(invoice_data[2])
-
     print(f"Tổng doanh thu cho ngày {formatted_date_input}: {total_revenue}")
 
 def display_sorted_products_revenue(manager):

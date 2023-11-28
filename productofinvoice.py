@@ -15,3 +15,5 @@ class ProductOfInvoice(Product):
 
     def calculate_total_amount(self):
         return self.get_selling_price() * self.__sold_quantity
+
+    #2 hàm calculate_total_price và calculate_total_amount giống nhau vì không biết phí VAT, tiền ship, hoặc các chi phí phụ khác,... nên thành tiền và tổng tiền đều sẽ được tính bằng giá mỗi sản phẩm * số lượng
